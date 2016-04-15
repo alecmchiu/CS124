@@ -3,3 +3,6 @@
 
 #text files
 *.txt
+
+#R files
+.Rhistory
