@@ -6,7 +6,7 @@ B <- c()
 for (each in A){
     p = sqrt(each)
     q = 1-p
-    B <- c(B, (2*p*q))
+    B <- c(B, (2*p*q + p**2))
 }
 
 cat (B)
