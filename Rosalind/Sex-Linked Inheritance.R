@@ -1,10 +1,11 @@
 #Sex-Linked Inheritance
 
-A <- scan('rosalind_afrq.txt',sep = ' ')
+A <- scan('rosalind_sexl.txt',sep = ' ')
+#A <- c(0.1, 0.5, 0.8)
 B <- c()
 
 for (each in A){
-    p = sqrt(each)
+    p = each
     q = 1-p
     B <- c(B, (2*p*q))
 }
