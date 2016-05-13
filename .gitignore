@@ -6,6 +6,7 @@
 
 #R files
 .Rhistory
+.Rdata
 
 #ZIP files
 *.zip
