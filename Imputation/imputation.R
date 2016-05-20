@@ -2,9 +2,39 @@
 
 setwd('/Users/Alec/documents/school/ucla/spring 2016/cs 124/programs/imputation')
 
-datasets <- c('SNP_Status.txt','imputation_training.txt','imputation_test.txt')
+set <- 3
 
-train <- read.table(datasets[2],header = TRUE)
-test <- read.table(datasets[3],header = TRUE, fill = TRUE)
+training <- c('PA1_train.txt','PA1_train.txt','imputation_training.txt')
+testing <- c('PA1_test_pure_random.txt','PA1_test_sys_random.txt','imputation_test.txt')
 
-means <- colMeans(train)
+train <- read.table(training[set],header = TRUE)
+test <- read.table(testing[set],header = TRUE, fill = TRUE)
+
+means <- round(colMeans(train))
+header <- colnames(test)
+
+holes <- sum(is.na(test))
+
+for (i in seq_len(nrow(test))){
+    for (j in seq_len(ncol(test))){
+        if (is.na(test[i,j])){
+            test[i,j] <- means[as.character(header[j])]
+        }
+    }
+}
+if (set == 1 || set == 2){
+    key <- read.table('PA1_test_key.txt')
+    
+    error <- 0
+    for (i in seq_len(nrow(test))){
+        for (j in seq_len(ncol(test))){
+            if (test[i,j] != key[i,j]){
+                error <- error +1
+            }
+        }
+    }
+    
+    cat(c('Success: ', (holes - error)/holes,'\n'),sep = '')
+    cat(c('Failure: ', error/holes),sep='')
+}
+
