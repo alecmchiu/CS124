@@ -2,11 +2,11 @@
 
 setwd('/Users/Alec/documents/school/ucla/spring 2016/cs 124/programs/imputation')
 
-rows_wanted = 1000
-columns_wanted = 100
-percent = 0.1
-title = 'real_1000SNP_n100'
-del_type = 'cell' #cell, col, or row
+rows_wanted = 10000
+columns_wanted = 135
+percent = 0.25
+title = '10000SNP_S'
+del_type = 'systematic' #cell, col, row, or systematic
 
 set <- 2
 full_data_sets <- c('SNP_Status.txt','imputation_training.txt')
@@ -32,10 +32,7 @@ if (del_type == 'cell'){
     sum(is.na(subset_data))
     
     write.table(subset_data,paste(title,'.txt',sep=''))
-}
-
-#column_dels
-if (del_type = 'col'){
+} else if (del_type == 'col'){
     col_dels <- percent*columns
     for (i in seq_len(col_dels)){
         subset_data[,round(runif(1,1,columns))] <- NA
@@ -43,10 +40,7 @@ if (del_type = 'col'){
     sum(is.na(subset_data))
     
     write.table(subset_data,paste(title,'.txt',sep=''))
-}
-
-#row_dels
-if (del_type == 'row'){
+} else if (del_type == 'row'){
     row_dels <- percent*rows
     for (i in seq_len(row_dels)){
         subset_data[round(runif(1,1,rows)),] <- NA
@@ -54,5 +48,13 @@ if (del_type == 'row'){
     
     sum(is.na(subset_data))
     
+    write.table(subset_data,paste(title,'.txt',sep=''))
+} else if (del_type == 'systematic'){
+    for (i in seq(2,nrow(subset_data),2)){
+        for (j in seq(2,ncol(subset_data),2)){
+            subset_data[i,j] <- NA
+        }
+    }
+    sum(is.na(subset_data))
     write.table(subset_data,paste(title,'.txt',sep=''))
 }

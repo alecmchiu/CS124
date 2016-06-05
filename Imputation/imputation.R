@@ -1,4 +1,6 @@
-#Imputation
+#Imputation Baseline
+
+start <- proc.time()
 
 setwd('/Users/Alec/documents/school/ucla/spring 2016/cs 124/programs/imputation')
 
@@ -10,8 +12,8 @@ key_sets <- c('PA1_test_key.txt','PA1_test_key.txt')
 
 credit_set <- length(training)
 
-train <- read.table(training[set], header = TRUE)
-test <- read.table(testing[set], header = TRUE, fill = TRUE)
+train <- read.table(training[set], header = TRUE, na.strings = ' ', sep = ' ')
+test <- read.table(testing[set], header = TRUE, na.strings = ' ', sep = ' ')
 
 means <- round(colMeans(train))
 header <- colnames(test)
@@ -25,6 +27,9 @@ for (i in seq_len(nrow(test))){
         }
     }
 }
+
+proc.time() - start
+
 if (set != credit_set){
     key <- read.table(key_sets[set], header = TRUE)
     error <- 0
@@ -39,4 +44,3 @@ if (set != credit_set){
     cat(c('Success: ', (holes - error)/holes,'\n'),sep = '')
     cat(c('Failure: ', error/holes),sep='')
 }
-
