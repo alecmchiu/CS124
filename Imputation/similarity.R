@@ -2,7 +2,7 @@ start <- proc.time()
 
 setwd('/Users/Alec/documents/school/ucla/spring 2016/cs 124/programs/imputation')
 
-set <- 3 # 1=100 SNP, 2=1000SNP, 3=10000SNP
+set <- 1 # 1=100 SNP, 2=1000SNP, 3=10000SNP
 type <- 2 # 1=random, 2 = systematic
 
 if (type == 1){
@@ -14,8 +14,6 @@ key <- c('100SNP_key.txt','1000SNP_key.txt','10000SNP_key.txt')
 
 test <- read.table(data_set[set], header = TRUE)
 key <- read.table(key[set], header = TRUE)
-
-#transpose test, cor(transpose,use='pairwise.complete.obs'), diag(cor) <- 0
 
 holes <- sum(is.na(test))
 empty <- which(is.na(test),TRUE)

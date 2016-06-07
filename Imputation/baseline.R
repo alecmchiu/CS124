@@ -1,8 +1,19 @@
 start <- proc.time()
 
+getmode <- function(x1){
+    x <- x1[!is.na(x1)]
+    ux <- unique(x)
+    ux[which.max(tabulate(match(x,ux)))]
+}
+
+mode2 <- function(matrix){
+    apply(matrix,1,getmode)
+}
+
 setwd('/Users/Alec/documents/school/ucla/spring 2016/cs 124/programs/imputation')
 
-set <- 3 # 1=100 SNP, 2=1000SNP, 3=10000SNP
+impute_mode <- 1 #1=mean, 2=mode
+set <- 1 # 1=100 SNP, 2=1000SNP, 3=10000SNP
 type <- 2 # 1=random, 2 = systematic
 
 if (type == 1){
@@ -15,7 +26,11 @@ key <- c('100SNP_key.txt','1000SNP_key.txt','10000SNP_key.txt')
 test <- read.table(data_set[set], header = TRUE)
 key <- read.table(key[set], header = TRUE)
 
-means <- round(rowMeans(test, na.rm = TRUE))
+if (impute_mode == 2){
+    means <- mode2(test)
+} else{ 
+    means <- round(rowMeans(test, na.rm = TRUE))
+}
 
 holes <- sum(is.na(test))
 empty <- which(is.na(test),TRUE)
