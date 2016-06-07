@@ -2,7 +2,7 @@ start <- proc.time()
 
 setwd('/Users/Alec/documents/school/ucla/spring 2016/cs 124/programs/imputation')
 
-set <- 1 # 1=100 SNP, 2=1000SNP, 3=10000SNP
+set <- 3 # 1=100 SNP, 2=1000SNP, 3=10000SNP
 type <- 2 # 1=random, 2 = systematic
 
 if (type == 1){
@@ -15,32 +15,46 @@ key <- c('100SNP_key.txt','1000SNP_key.txt','10000SNP_key.txt')
 test <- read.table(data_set[set], header = TRUE)
 key <- read.table(key[set], header = TRUE)
 
+#transpose test, cor(transpose,use='pairwise.complete.obs'), diag(cor) <- 0
 
 holes <- sum(is.na(test))
 empty <- which(is.na(test),TRUE)
 
-NA_cols <- names(colSums(is.na(test)) > 0)
+NA_cols <- names(test[colSums(is.na(test)) > 0])
+if (type == 2){
+    inference_cols <- names(test[colSums(is.na(test)) == 0])
+} else {
+    inference_cols <- names(test)
+}
+test[is.na(test)] <- -1 #set all NA to -1 for easier handling
 
 for (column in NA_cols){
     similarity_score <- 0
     best_column <- NA
-    for (each in colnames(test)){
+    for (each in inference_cols){
         if (column == each){
             next
         } else {
-            score <- 1-(length(test[,column][!test[,each]])/length(test[,column]))
+            score <- sum(test[,column]==test[,each])
             if (score > similarity_score){
                 similarity_score <- score
                 best_column <- each
             }
         }
     }
-    NA_vals <- which(is.na(test[,column]))
+    NA_vals <- which(test[,column]==-1)
     for (i in seq_len(length(NA_vals))){
-        test[,column][i] <- test[,best_column][i]
+        test[,column][NA_vals[i]] <- test[,best_column][NA_vals[i]]
     }
 }
-
+#sum(test==-1)
+if (sum(test == -1) > 0){
+    means <- round(rowMeans(test, na.rm = TRUE))
+    leftover <- which(test==-1,TRUE)
+    for (i in seq_len(nrow(leftover))){
+        test[leftover[i,1],leftover[i,2]] <- means[leftover[i,1]]
+    }
+}
 run_time <- proc.time() - start
 
 error <- 0
@@ -50,7 +64,4 @@ for (i in seq_len(nrow(empty))){
     }
 }
 
-cat(c('Success: ', (holes - error)/holes,'\n'),sep = '')
-cat(c('Failure: ', error/holes),sep='')
-
-print(run_time)
+cat(c('F1 Score: ', (holes - error)/holes,'\n','Time: ',run_time['elapsed'],'s'),sep = '')

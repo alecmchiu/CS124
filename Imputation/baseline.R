@@ -33,7 +33,4 @@ for (i in seq_len(nrow(empty))){
     }
 }
 
-cat(c('Success: ', (holes - error)/holes,'\n'),sep = '')
-cat(c('Failure: ', error/holes),sep='')
-
-print(run_time)
+cat(c('F1 Score: ', (holes - error)/holes,'\n','Time: ',run_time['elapsed'],'s'),sep = '')
