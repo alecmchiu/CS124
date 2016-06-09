@@ -27,9 +27,19 @@ The multinomial logistic regression method here uses high correlation. We first 
 
 ##Benchmarks
 
-+ F1 Score
-+ Complexity & Wall Time
-+ Implications & Improvements
+#F1 Score
+
+F1 score is a measure of precision and recall. We see an overall increase in F1 score for the improved method over the baseline method. F1 score drops as the number of SNP's to impute increases.
+
+#Complexity & Wall Time
+
+The complexity of baseline method is O(n) where n is the number of missing data values. This is reflected in wall time measurements. The improved method has a complexity of O(s<sup>2</sup>) where s is the number of SNP's in the data set. This arises from creating the pair-wise correlation matrix.
+
+#Implications & Improvements
+
+There are many areas of improvement in this algorithm. One of the simplest improvements that can be made is to port the algorithm to a faster language. R is known to slow down when faced with larger datasets. Perhaps moving the algorithm to Python and the pandas package would improve the speed of this algorithm, even if by simply introducint multithreading.
+
+There is also a complication regarding the number of completed cases. Both the similarity approach and the multinomial logistic regression heavily rely on the number of completed cases. In the case of missing completely at random (MCAR) data, this poses a problem as there may be no completed cases in the data set. Systematic randomness heavily impacts the multinomial logistic regression as without many complete cases, very incorrect regression models may be made.
 
 ##Concluding Remarks
 
