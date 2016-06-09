@@ -2,7 +2,7 @@ start <- proc.time()
 
 setwd('/Users/Alec/documents/school/ucla/spring 2016/cs 124/programs/imputation')
 
-set <- 1 # 1=100 SNP, 2=1000SNP, 3=10000SNP
+set <- 3 # 1=100 SNP, 2=1000SNP, 3=10000SNP
 type <- 1 # 1=random, 2 = systematic
 
 if (type == 1){
@@ -18,18 +18,49 @@ key <- read.table(key[set], header = TRUE)
 holes <- sum(is.na(test))
 empty <- which(is.na(test),TRUE)
 
-#cor_mat <- cor(t(test),use='pairwise.complete.obs')
-#diag(cor_mat) <- 0
+SNP_mat <- data.frame(t(test))
+colnames(SNP_mat) <- rownames(test)
+cor_mat <- cor(SNP_mat,use='pairwise.complete.obs')
+diag(cor_mat) <- 0
+high_cor <- data.frame(which(abs(cor_mat) >= 0.9, arr.ind = TRUE, useNames = FALSE))
+colnames(high_cor) <- c('SNP1','SNP2')
+high_cor <- high_cor[order(high_cor$SNP1),]
 
-NA_cols <- names(test[colSums(is.na(test)) > 0])
-if (type == 2){
-    inference_cols <- names(test[colSums(is.na(test)) == 0])
-} else {
-    inference_cols <- names(test)
+missing <- colSums(is.na(SNP_mat))
+
+library(nnet)
+
+for (i in sort(unique(high_cor['SNP1'])[,])){
+    cor_SNP <- high_cor[high_cor$SNP1 == i,][,'SNP2']
+    #best_SNP <- cor_SNP[match(min(missing[cor_SNP]),missing[cor_SNP])]
+    for (j in seq_len(length(cor_SNP))){
+        model <- multinom(SNP_mat[,i]~SNP_mat[,cor_SNP[j]],data=SNP_mat)
+        if (j == 1){
+            guess <- as.numeric(predict(model,SNP_mat[,cor_SNP[j]]))-1
+            guess[is.na(guess)] <- 0
+        } else{
+            guess2 <- as.numeric(predict(model,SNP_mat[,cor_SNP[j]]))-1
+            guess2[is.na(guess2)] <- 0
+            guess <- (guess+guess2)/2
+        }
+    }
+    empty_in_row <- which(is.na(SNP_mat[,i]),TRUE)
+    SNP_mat[,i][empty_in_row] <- guess[empty_in_row]
 }
+
+#NA_cols <- names(test[colSums(is.na(test)) > 0])
+
+test <- t(round(SNP_mat))
+
 test[is.na(test)] <- -1 #set all NA to -1 for easier handling
 
-
+# if (sum(test == -1) > 0){
+#     means <- round(rowMeans(test, na.rm = TRUE))
+#     leftover <- which(test==-1,TRUE)
+#     for (i in seq_len(nrow(leftover))){
+#         test[leftover[i,1],leftover[i,2]] <- means[leftover[i,1]]
+#     }
+# }
 
 run_time <- proc.time() - start
 

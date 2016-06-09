@@ -14,7 +14,7 @@ setwd('/Users/Alec/documents/school/ucla/spring 2016/cs 124/programs/imputation'
 
 impute_mode <- 1 #1=mean, 2=mode
 set <- 1 # 1=100 SNP, 2=1000SNP, 3=10000SNP
-type <- 2 # 1=random, 2 = systematic
+type <- 1 # 1=random, 2 = systematic
 
 if (type == 1){
     data_set <- c('100SNP_R.txt','1000SNP_R.txt','10000SNP_R.txt')
