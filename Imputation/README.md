@@ -8,8 +8,9 @@ A large problem in bioinformatics is the inability to get complete data. As a da
 ##Contents
 + imputation.R - Old baseline imputation script (ignore)
 + baseline.R - Completed baseline mean imputation script
-+ hole_generator.R - missing data generator
++ hole_generator.R - Missing data generator
 + similarity.R - Similarity approach to imputation
++ regression.R - Multinomial logistic regression approach
 
 ##Baseline Method
 
@@ -18,5 +19,9 @@ The baseline method for this project is mean imputation. This is the idea of usi
 ##Improved Method
 
 ##Benchmarks
+
++ F1 Score
++ Complexity & Wall Time
++ Implications & Improvements
 
 ##Concluding Remarks
