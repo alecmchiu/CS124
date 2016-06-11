@@ -2,18 +2,31 @@ start <- proc.time()
 
 setwd('/Users/Alec/documents/school/ucla/spring 2016/cs 124/programs/imputation')
 
-set <- 3 # 1=100 SNP, 2=1000SNP, 3=10000SNP
-type <- 1 # 1=random, 2 = systematic
+set <- 2 # 1=100 SNP/easy, 2=1000SNP/medium, 3=10000SNP/hard
+type <- 1 # 1=random, 2 = systematic, 3 = Bilow sets, 4 = Bilow credit sets
+
+key <- c('100SNP_key.txt','1000SNP_key.txt','10000SNP_key.txt')
 
 if (type == 1){
     data_set <- c('100SNP_R.txt','1000SNP_R.txt','10000SNP_R.txt')
 } else if (type == 2){
     data_set <- c('100SNP_S.txt','1000SNP_S.txt','10000SNP_S.txt')
+} else if (type == 3){
+    data_set <- c('easy_test.txt','medium_test.txt','hard_test.txt')
+    key <- c('easy_answer.txt','medium_answer.txt','hard_answer.txt')
+} else if (type == 4){
+    data_set <- c('easy.txt','medium.txt','hard.txt')
 }
-key <- c('100SNP_key.txt','1000SNP_key.txt','10000SNP_key.txt')
 
-test <- read.table(data_set[set], header = TRUE)
-key <- read.table(key[set], header = TRUE)
+if (type <= 2){
+    test <- read.table(data_set[set], header = TRUE)
+    key <- read.table(key[set], header = TRUE)
+} else {
+    test <- read.table(data_set[set],header = TRUE, na.strings = '-1')
+    if (type == 3){
+        key <- read.table(key[set], header = TRUE)
+    }
+}
 
 holes <- sum(is.na(test))
 empty <- which(is.na(test),TRUE)
@@ -22,7 +35,7 @@ SNP_mat <- data.frame(t(test))
 colnames(SNP_mat) <- rownames(test)
 cor_mat <- cor(SNP_mat,use='pairwise.complete.obs')
 diag(cor_mat) <- 0
-high_cor <- data.frame(which(abs(cor_mat) >= 0.9, arr.ind = TRUE, useNames = FALSE))
+high_cor <- data.frame(which(abs(cor_mat) >= 0.15, arr.ind = TRUE, useNames = FALSE))
 colnames(high_cor) <- c('SNP1','SNP2')
 high_cor <- high_cor[order(high_cor$SNP1),]
 
